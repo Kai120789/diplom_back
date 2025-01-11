@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"os"
 	"strconv"
 
@@ -11,10 +12,11 @@ type Config struct {
 	RunAddress   string
 	DbURL        string
 	JWTSecret    string
+	Salt         string
 	LogLevel     string
+	Cost         int
 	RefreshLive  string
 	AccessLive   string
-	Salt         string
 	TokensSecure bool
 	AppMode      string
 }
@@ -43,6 +45,14 @@ func GetConfig() (*Config, error) {
 	default:
 		cfg.TokensSecure = false
 	}
+
+	cost, err := getIntEnvOrDefault("COST", 0)
+	if err != nil {
+		return nil, errors.New("cost is uncorrect")
+	}
+
+	cfg.Cost = cost
+
 	AppConfig = &cfg
 
 	return &cfg, nil

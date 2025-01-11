@@ -16,7 +16,7 @@ type UserHandler struct {
 }
 
 type UserService interface {
-	Registration(registrationDTO dto.RegistrationUser) (*dto.RegistrationReturn, error)
+	Registration(registrationDTO dto.RegistrationUser) (*string, *string, error)
 	Login(loginDTO dto.LoginUser) (string, string, error)
 }
 
@@ -39,7 +39,7 @@ func (h *UserHandler) Registration(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	regReturn, err := h.service.Registration(user)
+	refresh, access, err := h.service.Registration(user)
 	if err != nil {
 		sendJSONError(rw, err.Error(), http.StatusInternalServerError)
 		return
@@ -47,7 +47,7 @@ func (h *UserHandler) Registration(rw http.ResponseWriter, r *http.Request) {
 
 	refreshTokenCokie := http.Cookie{
 		Name:     "refreshtoken",
-		Value:    regReturn.RefreshToken,
+		Value:    *refresh,
 		Path:     "/",
 		Expires:  time.Now().Add(2 * time.Hour * 24 * 30),
 		HttpOnly: true,
@@ -56,7 +56,7 @@ func (h *UserHandler) Registration(rw http.ResponseWriter, r *http.Request) {
 
 	accessTokenCookie := http.Cookie{
 		Name:     "accesstoken",
-		Value:    regReturn.AccessToken,
+		Value:    *access,
 		Path:     "/",
 		Expires:  time.Now().Add(15 * time.Minute),
 		HttpOnly: true,
