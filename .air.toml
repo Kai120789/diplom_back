@@ -1,0 +1,17 @@
+# root directory
+root = "."
+tmp_dir = "tmp"
+
+# build config
+[build]
+cmd = "go build -o ./tmp/goapp ./cmd/crypto/main.go"
+bin = "./tmp/goapp"
+include_ext = ["go"]
+exclude_dir = ["vendor", "tmp"]
+exclude_file = ["*.test.go"]
+log = "tmp/build.log"
+
+# run config
+[runner]
+cmd = "./tmp/goapp"
+watch_delay = 500

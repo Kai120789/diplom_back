@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    env_file:
+      - ../.env
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+
+  app:
+    build:
+      context: ..
+      dockerfile: ./build/Dockerfile
+    container_name: goapp
+    environment:
+      - TZ=Europe/Moscow
+    env_file:
+      - ../.env
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    volumes:
+      - ..:/app
+      - /app/tmp
+    command: ["air", "-c", ".air.toml"]
+    working_dir: /app
+
+volumes:
+  db-data:
